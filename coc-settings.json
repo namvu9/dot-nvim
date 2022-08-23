@@ -1,0 +1,36 @@
+{
+  "metals.statusBarEnabled": true,
+  "rust-analyzer.cargo.buildScripts.enable": true,
+  "rust-analyzer.procMacro.enable": true,
+  "rust-analyzer.inlayHints.enable": false,
+  "signature.target": "echo",
+  "signature.enable": false,
+  "suggest.noselect": false,
+  "suggest.maxCompleteItemCount": 10,
+  "suggest.maxPreviewWidth": 40,
+  "javascript.validate.enable": false,
+  "flutter.lsp.initialization.onlyAnalyzeProjectsWithOpenFiles": false,
+  "python.venvPath": "/home/nam/anaconda3/envs",
+  "clangd.path": "/home/nam/.config/coc/extensions/coc-clangd-data/install/12.0.0/clangd_12.0.0/bin/clangd",
+  "languageserver": {
+    "haskell": {
+      "command": "haskell-language-server-wrapper",
+      "args": ["--lsp"],
+      "rootPatterns": [
+        "*.cabal",
+        "stack.yaml",
+        "cabal.project",
+        "package.yaml",
+        "hie.yaml"
+      ],
+      "filetypes": ["haskell", "lhaskell"]
+    },
+    "terraform": {
+      "command": "terraform-ls",
+      "args": ["serve"],
+      "filetypes": ["terraform", "tf"],
+      "initializationOptions": {},
+      "settings": {}
+    }
+  }
+}
