@@ -1,11 +1,21 @@
-"============================================================ 
-" PLUGINS
-"============================================================ 
+let g:ale_set_loclist = 0
+  let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files -co --exclude-standard']
+let g:ale_set_quickfix = 1
+let g:OmniSharp_diagnostic_exclude_paths = [
+\ 'obj\\',
+\ 'obj',
+\ '[Tt]emp\\',
+\ '\.nuget\\',
+\ '\<AssemblyInfo\.cs\>'
+\]
+
+""============================================================ 
+"" PLUGINS
+""============================================================ 
 call plug#begin('~/.vim/plugged')             
 
-" Essentials
+"" Essentials
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-"Plug 'ctrlpvim/ctrlp.vim'
 Plug 'dyng/ctrlsf.vim'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
@@ -15,21 +25,21 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'sheerun/vim-polyglot'
 Plug 'easymotion/vim-easymotion'
 Plug 'psliwka/vim-smoothie'
-Plug 'neovim/nvim-lspconfig' 
 Plug 'OmniSharp/omnisharp-vim'
+Plug 'ctrlpvim/ctrlp.vim'
 
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
 Plug 'w0rp/ale'
 
-" Color schemes
+"" Color schemes
 Plug 'joshdick/onedark.vim'
 
 call plug#end()
 
-"============================================================ 
-" GENERAL SETTINGS
-"============================================================ 
+"lua require('init')
+
+""============================================================ 
+"" GENERAL SETTINGS
+""============================================================ 
 set autoindent    " always set autoindenting on
 set concealcursor=
 set conceallevel=2
@@ -70,33 +80,27 @@ syntax on
 
 hi Normal ctermbg=black guibg=black
 
-"============================================================ 
-" FUNCTIONS
-"============================================================ 
+""============================================================ 
+"" FUNCTIONS
+""============================================================ 
 augroup neovim_terminal
   autocmd!
-  " Enter Terminal-mode (insert) automatically
+  "" Enter Terminal-mode (insert) automatically
   autocmd TermOpen * startinsert
-  " Disables number lines on terminal buffers
+  "" Disables number lines on terminal buffers
   autocmd TermOpen * :setlocal nonumber norelativenumber
-  " allows you to use Ctrl-c on terminal window
+  "" allows you to use Ctrl-c on terminal window
   autocmd TermOpen * nnoremap <buffer> <C-c> i<C-c>
 augroup END
 
-augroup dart
-  autocmd!
-  autocmd BufNewFile,BufRead *.dart set textwidth=0
-  autocmd BufNewFile,BufRead *.dart set ft=dart shiftwidth=2 nowrap
-augroup END
-
-"============================================================ 
-" Autocommands
-"============================================================ 
+""============================================================ 
+"" Autocommands
+""============================================================ 
 " Trigger `autoread` when files changes on disk
 " https://unix.stackexchange.com/questions/149209/refresh-changed-content-of-file-opened-in-vim/383044#383044
 " https://vi.stackexchange.com/questions/13692/prevent-focusgained-autocmd-running-in-command-line-editing-mode
 autocmd FocusGained,BufEnter,CursorHold,CursorHoldI *
-        \ if mode() !~ '\v(c|r.?|!|t)' && getcmdwintype() == '' | checktime | endif
+	\ if mode() !~ '\v(c|r.?|!|t)' && getcmdwintype() == '' | checktime | endif
 
 " Notification after file change
 " https://vi.stackexchange.com/questions/13091/autocmd-event-for-autoread
@@ -104,9 +108,9 @@ autocmd FileChangedShellPost *
   \ echohl WarningMsg | echo "File changed on disk. Buffer reloaded." | echohl None
 
 
-"============================================================ 
-" KEYBOARD REMAPPINGS
-"============================================================ 
+""============================================================ 
+"" KEYBOARD REMAPPINGS
+""============================================================ 
 let mapleader = ","
 " Quickly reload/edit the vimrc file
 nnoremap <silent> <leader>ev :tabnew $MYVIMRC<CR> 
@@ -120,19 +124,19 @@ map <leader><leader> <Plug>(easymotion-prefix)
 
 function! Format()
   call CocActionAsync('format')
-  "if &ft =~ '\(css\|javascript\|html\|typescript\|typescript\.tsx\)'
-    "Prettier
-  "else 
-  "endif
+  if &ft =~ '\(css\|javascript\|html\|typescript\|typescript\.tsx\)'
+   prettier
+  else 
+  endif
 endfunction
 
 nnoremap <Leader>f :call Format()<CR>
 
-" Search
+"" Search
 nnoremap * *N
 nnoremap <leader>? *:%s/<C-r>///g<left><left>
 
-" Navigation
+"" Navigation
 nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
@@ -185,43 +189,42 @@ let ignore = [
   \ '.dart_tool',
   \ 'testdata',
   \ 'vendor',
-  \ 'dist-newstyle'
+  \ 'dist-newstyle',
+  \ 'build',
+  \ 'obj'
 \ ]
 
-" ctrlp config
-let g:ctrlp_custom_ignore = join(ignore, '\|')
-let g:ctrlp_show_hidden = 1
-let g:ctrlp_working_path_mode = 'rw'
-
-nnoremap <C-p> :Files<CR>
-nnoremap <leader><S-p> :GFiles<CR>
+nnoremap <C-p> :CtrlP<CR>
 
 "ctrlsf
 let g:ctrlsf_ignore_dir = ['node_modules', 'ios', 'vendor', 'dist', '.cache']
 
-"nerdtree
-let NERDTreeShowHidden=1
-" ============================================================
-" Other vimrc parts
-" ============================================================
+""nerdtree
+"let NERDTreeShowHidden=1
+"" ============================================================
+"" Other vimrc parts
+"" ============================================================
 source ~/.config/nvim/coc.vim
 
 let g:ale_javascript_prettier_use_local_config = 1
 
-lua require('init')
-
-" Tell ALE to use OmniSharp for linting C# files, and no other linters.
+"" Tell ALE to use OmniSharp for linting C# files, and no other linters.
+let g:ale_sign_error = '•'
+let g:ale_sign_warning = '•'
+let g:ale_sign_info = '·'
+let g:ale_sign_style_error = '·'
+let g:ale_sign_style_warning = '·'
 let g:ale_linters = { 'cs': ['OmniSharp'] }
+
+let g:OmniSharp_server_use_net6 = 1 
+let g:OmniSharp_selector_findusages = 'fzf'
+let g:OmniSharp_selector_ui = 'fzf'
+
 
 augroup omnisharp_commands
   autocmd!
-
-  " Show type information automatically when the cursor stops moving.
-  " Note that the type is echoed to the Vim command line, and will overwrite
-  " any other messages in this space including e.g. ALE linting messages.
-  autocmd CursorHold *.cs OmniSharpTypeLookup
-
-  " The following commands are contextual, based on the cursor position.
+  
+  """ The following commands are contextual, based on the cursor position.
   autocmd FileType cs nmap <silent> <buffer> gd <Plug>(omnisharp_go_to_definition)
   autocmd FileType cs nmap <silent> <buffer> gr <Plug>(omnisharp_find_usages)
   autocmd FileType cs nmap <silent> <buffer> gi <Plug>(omnisharp_find_implementations)
@@ -234,12 +237,12 @@ augroup omnisharp_commands
   autocmd FileType cs nmap <silent> <buffer> <C-\> <Plug>(omnisharp_signature_help)
   autocmd FileType cs imap <silent> <buffer> <C-\> <Plug>(omnisharp_signature_help)
 
-  " Navigate up and down by method/property/field
+  """ Navigate up and down by method/property/field
   autocmd FileType cs nmap <silent> <buffer> [[ <Plug>(omnisharp_navigate_up)
   autocmd FileType cs nmap <silent> <buffer> ]] <Plug>(omnisharp_navigate_down)
-  " Find all code errors/warnings for the current solution and populate the quickfix window
-  autocmd FileType cs nmap <silent> <buffer> <Leader>osgcc <Plug>(omnisharp_global_code_check)
-  " Contextual code actions (uses fzf, vim-clap, CtrlP or unite.vim selector when available)
+  """ Find all code errors/warnings for the current solution and populate the quickfix window
+  autocmd FileType cs nmap <silent> <buffer> <Leader><space>d <Plug>(omnisharp_global_code_check)
+  "" Contextual code actions (uses fzf, vim-clap, CtrlP or unite.vim selector when available)
   autocmd FileType cs nmap <silent> <buffer> <space>ac <Plug>(omnisharp_code_actions)
   autocmd FileType cs xmap <silent> <buffer> <space>ac <Plug>(omnisharp_code_actions)
   " Repeat the last code action performed (does not use a selector)
@@ -251,5 +254,4 @@ augroup omnisharp_commands
   autocmd FileType cs nmap <silent> <buffer> <Leader>rn <Plug>(omnisharp_rename)
 augroup END
 
-" Enable snippet completion, using the ultisnips plugin
-" let g:OmniSharp_want_snippet=1
+autocmd FileType qf nmap <CR> <CR><c-w><c-p>
